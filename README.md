@@ -12,9 +12,9 @@ To execute, run this command:
 
 sudo useradd --system -d /var/lib/webgen -s /usr/sbin/nologin webgen
 
-- --system: Creates a system user (UID below 1000).
-- -d /var/lib/webgen: Sets the home directory for the user.
-- -s /usr/sbin/nologin: Prevents the user from logging in interactively.
+- --system: Creates a system user
+- -d /var/lib/webgen: Sets home directory for the user
+- -s /usr/sbin/nologin: Prevents user from logging in through command line
 
 Next we will need to create the necessary subdirectories for files we will be integrating later. 
 We will need to make subdirectories for Bin and HTML, we can do this with the following commands: 
@@ -28,20 +28,53 @@ To execute, run this command:
 
 sudo chown -R webgen:webgen /var/lib/webgen
 
+- -R: Allows Ownership for all the directories under webgen
 
 ## 2. Setting up Necessary Files
 
 The current repository you are in includes all the necessary files. To access these files onto your local machine, execute this command:
 
-
+git clone https://github.com/philiflo/2420-as3.git
 
 ### generate_index
 
+The generate_index script is responsible for generating the html template that will be injected into the index.html file, which we will be calling to create our website. 
+
+To move the file to its proper location, execute the following command inside the 2420-as3 directory:
+
+sudo mv generate_index /var/lib/webgen/bin/
+
+Once executed, make sure the script is executable by running:
+
+sudo chmod +x /var/lib/webgen/bin/generate_index
+
 ### generate-index.service and generate-index.timer
+
+The generate-index.service and generate-index.timer file are responsible for the execution of this process daily at 5am. Generate-index.service defines what action must be executed (running the script inside generate_index), while generate-index.timer defines the time in which the file must be executed. 
+
+To move the file to its proper location, execute the following command inside the 2420-as3 directory:
+
+sudo cp generate-index.service /etc/systemd/system/
+
+Once executed, make sure the script is executable by running:
+
+sudo chmod +x /var/lib/webgen/bin/generate_index
+
+Once done, reload systemd through: 
+
+sudo systemctl daemon-reload
+
+Then enable the timer through:
+
+sudo systemctl enable --now generate-index.timer
 
 ### nginx.conf and service-block.conf
 
 
+
 ## 3. Setting up Personal Firewall (UFW)
+
+
+## Troubleshooting
 
 
