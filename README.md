@@ -4,7 +4,7 @@ Hey new user, this tutorial will help you set up an HTML generator that runs eve
 
 ## 1. Creating a new System User (Webgen)
 
-For this setup, you will need to create a new user named "webgen" for which the files have been geared to execute towards. They have been written this way to ensure security (limiting access in case of security breach) and efficiency (blank slate solely intended for these setup files) are met for the execution of this tutorial.
+For this setup, you will need to create a new user named "webgen" for which the files have been geared to execute towards. ***They have been written this way to ensure security (limiting access in case of security breach) and efficiency (blank slate solely intended for these setup files) are met for the execution of this tutorial.***
 
 This user will have a home directory set to /var/lib/webgen and will not have a login shell (since it will not be used for interactive logins). 
 
@@ -70,11 +70,78 @@ sudo systemctl enable --now generate-index.timer
 
 ### nginx.conf and service-block.conf
 
+Nginx.conf and service-block.conf are necessary to configure nginx for the use of the site we are creating. ***We have seperated the service block into its own file to keep configuration in the nginx.conf file specific to nginx global configuration***
 
+To locate these file in their necessary location, execute the following commands
+
+Nginx.conf:
+
+sudo mv nginx.conf /etc/nginx/nginx.conf
+
+Service-block.conf:
+
+Create the necessary subdirectories - 
+
+sudo mkdir /etc/nginx/sites-available
+sudo mkdir /etc/nginx/sites-enabled
+
+Then move service-block.conf to the available sites - 
+
+sudo mv server-block.conf /etc/nginx/sites-available/
 
 ## 3. Setting up Personal Firewall (UFW)
 
+Once all the files are setup, we can setup our firewall using UFW (uncomplicated firewall). This will effectively create security measures by managing user traffic on our server. 
 
-## Troubleshooting
+Begin by installing UFW through the following command: 
+
+sudo pacman -S ufw
+
+- pacman is the package manager that Arch Linux utilizes, for other Linux distributors, utilize the necessary package manager to ensure a complete installation is executed.
+
+Next, enable HTTPS and SSH on our firewall to allow these traffic commanded by these services. If SSH isn't enabled on your local server before your firewall is enabled, you will effectively block access to your server from your SSH, basically kicking you out from your own server. 
+
+Execute the following commands:
+
+sudo ufw allow ssh
+sudo ufw allow http
+
+To enable your firewall, execute the following command: 
+
+sudo systemctl enable --now ufw.service
+
+Next we want to enable ssh rate limiting to combat against brute force attacks, a common method of security breaching. 
+
+We can do this through the following command: 
+
+sudo ufw limit ssh
+
+## 4. Execution and Troubleshooting
+
+Once all steps have been executed, we can begin testing to see if all files have been integrated correctly. 
+
+First lets check if the website executes correctly:
+
+Check if nginx files are executing properly - 
+
+sudo nginx -t
+sudo systemctl reload nginx
+
+In a new browser tab, paste the following to ensure the website has the correct information -
+
+http://164.90.146.179/
+
+This ip address is defined in the service-block.conf file as the ip for this website. The website will include system information such as the version of your OS and the current date if it has been executed correctly. 
+
+***We can then test if the timer and service files have been executed properly with the following commands:***
+
+generate_index.timer - 
+
+sudo systemctl status generate-index.timer
+
+Look to see if the output states 'active' in green or 'failed' in red.
+
+For generate_index.service, we must first run the script manually if it isn't 5am to see if it runs correctly - 
+
 
 
