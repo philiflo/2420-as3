@@ -54,7 +54,7 @@ The generate-index.service and generate-index.timer file are responsible for the
 
 To move the file to its proper location, execute the following command inside the 2420-as3 directory:
 ```
-sudo cp generate-index.service /etc/systemd/system/
+sudo mv generate-index.service /etc/systemd/system/
 ```
 Once executed, make sure the script is executable by running:
 ```
